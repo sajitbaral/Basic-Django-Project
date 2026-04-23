@@ -10,7 +10,7 @@ def tweet_list(request):
     return render(request, 'tweet_list.html', {'tweets':tweets})
 
 def create_tweet(request):
-    if form.request == 'POST':
+    if request.method == 'POST':
         form= TweetForm(request.POST, request.FILES)
         if form.is_valid():
             tweet= form.save(commit=False)
@@ -36,4 +36,12 @@ def edit_tweet(request, tweet_id):
     else:
         form= TweetForm(instance= tweet)                        #This runs if the user is just opening the "Edit" page for the first time (a GET request).here instance= tweet, It pre-fills the text box on our website so the user can see their old tweet while they edit it.
 
-    return(request, 'create_tweet.html', {'form':form})
+    return render(request, 'create_tweet.html', {'form':form})
+
+def delete_tweet(request, tweet_id):
+    tweet= get_object_or_404(Tweet, pk=tweet_id, user=request.user)
+    if request.method=='POST':
+        tweet.delete()
+        return redirect('tweet_list')
+    
+    return render(request, 'delete_tweet.html', {'tweet':tweet})
